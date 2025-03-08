@@ -26,43 +26,43 @@
 </head>
 <body>
 
-    <div class="container leaderboard-container">
-        <h2 class="text-center mb-4">Leaderboard</h2>
+<div class="container leaderboard-container">
+    <h2 class="text-center mb-4">Leaderboard</h2>
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="filter" class="form-label">Filter:</label>
-                <select id="filter" class="form-select">
-                    <option value="all">All Time</option>
-                    <option value="day">Today</option>
-                    <option value="month">This Month</option>
-                    <option value="year">This Year</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label for="search" class="form-label">Search by User Name:</label>
-                <input type="text" id="search" class="form-control" placeholder="Enter User Name">
-            </div>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="filter" class="form-label">Filter:</label>
+            <select id="filter" class="form-select">
+                <option value="all">All Time</option>
+                <option value="day">Today</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+            </select>
         </div>
-
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Rank</th>
-                        <th>Full Name</th>
-                        <th>Total Points</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-body"></tbody>
-            </table>
-            <div id="pagination-controls" class="text-center mt-3"></div>
-
+        <div class="col-md-4">
+            <label for="search" class="form-label">Search by User Name:</label>
+            <input type="text" id="search" class="form-control" placeholder="Enter User Name">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button id="recalculate-btn" class="btn btn-primary w-100">Recalculate</button>
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Rank</th>
+                    <th>Full Name</th>
+                    <th>Total Points</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+        </table>
+        <div id="pagination-controls" class="text-center mt-3"></div>
+    </div>
+</div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -87,7 +87,6 @@
                 `);
             });
 
-            // Generate pagination buttons
             let paginationHtml = `<nav><ul class="pagination justify-content-center">`;
 
             if (data.prev_page_url) {
@@ -118,8 +117,21 @@ $(document).ready(function () {
     fetchLeaderboard();
 
     $('#filter').change(fetchLeaderboard);
-    $('#search').on('keyup', function () {
-        fetchLeaderboard();
+    $('#search').on('keyup', fetchLeaderboard);
+
+    $('#recalculate-btn').click(function () {
+        $.ajax({
+            url: '/recalculate',
+            type: 'POST',
+            data: { _token: '{{ csrf_token() }}' }, 
+            success: function () {
+                alert("Leaderboard recalculated successfully!");
+                fetchLeaderboard(); 
+            },
+            error: function () {
+                alert("Error recalculating leaderboard.");
+            }
+        });
     });
 });
 

@@ -46,6 +46,27 @@ class LeaderboardController extends Controller
     
         return response()->json($leaderboard);
     }
+
+    public function recalculate(Request $request)
+{
+    $users = User::all();
+    $uniquePoints = range(1, 1000); // Generate unique points from 1 to 1000
+    shuffle($uniquePoints); // Shuffle to randomize
+
+    // Insert 10 new records for this week (excluding today)
+    for ($i = 0; $i < 10; $i++) {
+        $user = $users->random(); // Pick a random user
+
+        Activity::create([
+            'user_id' => $user->id,
+            'points' => 1000, // Assign unique points
+            'performed_at' => Carbon::now()->subDays(rand(1, 30))
+        ]);
+    }
+    return response()->json(['message' => 'Leaderboard recalculated successfully!']);
+}
+
+
     
 }
 
