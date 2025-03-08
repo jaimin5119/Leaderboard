@@ -18,4 +18,5 @@ Route::get('/', function () {
 });
 
 Route::get('/leaderboard', [LeaderboardController::class, 'index']);
+Route::post('/recalculate', [LeaderboardController::class, 'recalculate']);
 
